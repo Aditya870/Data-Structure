@@ -1,0 +1,116 @@
+Sub - XOR
+Send Feedback
+Given an array of positive integers, you have to print the number of subarrays whose XOR is less than K. Subarrays are defined as a sequence of continuous elements Ai, Ai + 1, ..., Aj. XOR of a subarray is defined as Ai ^ Ai + 1 ^ ... ^ Aj. Symbol ^ is Exclusive Or.
+Input Format:
+First line of input contains N and K, space separated.
+Second line of input contains N space separated.integers.
+Constraints:
+1 ≤ N ≤ 10^5
+1 ≤ A[i] ≤ 10^5
+1 ≤ K ≤ 10^6
+Output Format:
+For each test case, print the required answer.
+
+
+#include<bits/stdc++.h>
+using namespace std;
+
+struct Node {
+    int count;
+    Node* left;
+    Node* right;
+    Node() {
+        count = 0;
+        left = NULL;
+        right = NULL;
+    }
+};
+
+class Trie {
+    private:
+        Node* root;
+    public:
+        Trie() {
+            root = new Node();
+        }
+
+        void insert(int num) {
+            Node* curr = root;
+            for (int i = 31; i >= 0; i--) {
+                if ((num >> i) & 1) {
+                    if (curr->right == NULL) {
+                        curr->right = new Node();
+                    }
+                    curr = curr->right;
+                }
+                else {
+                    if (curr->left == NULL) {
+                        curr->left = new Node();
+                    }
+                    curr = curr->left;
+                }
+                curr->count++;
+            }
+        }
+
+        int set(int num, int i) {
+            return (num >> i) & 1;
+        }
+
+        int findmaxm(int num, int k) {
+            long long nums = 0;
+            Node* cur = root;
+            for (int i = 31; i >= 0; i--) {
+                if (set(num, i)) {
+                    if (set(k, i)) {
+                        if (cur->right != NULL) {
+                            nums += cur->right->count;
+                        }
+                        cur = cur->left;
+                    }
+                    else {
+                        cur = cur->right;
+                    }
+                }
+                else {
+                    if (set(k, i)) {
+                        if (cur->left != NULL) {
+                            nums += cur->left->count;
+                        }
+                        cur = cur->right;
+                    }
+                    else {
+                        
+                        cur = cur->left;
+                    }
+                }
+                if(cur==NULL)return nums;
+            }
+            return nums;
+        }
+};
+
+int main(){
+    int N, K;
+    cin >> N >> K;
+
+    vector<int> arr(N);
+    for (int i = 0; i < N; i++) {
+        cin >> arr[i];
+    }
+
+    long long ans = 0;
+    long long cur_xor = 0;
+    Trie t;
+    t.insert(cur_xor);
+
+    for (int i = 0; i < N; i++) {
+        cur_xor = cur_xor ^ arr[i];
+        ans += t.findmaxm(cur_xor, K);
+        t.insert(cur_xor);
+    }
+
+    cout << ans << endl;
+
+    return 0;
+}
