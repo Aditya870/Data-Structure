@@ -1,0 +1,113 @@
+You are given an string S and a test string T. You have to find whether string S is a substring of the string T.
+Input Format:
+First line of input will contain an integer T, representing the number of test cases
+Each test case is as follows:
+Line 1: contains the string S.
+Line 2: contains the string T.
+
+Constraints:
+1 <= T <= 100
+1 <= |S|, |T| <= 10^5
+Output Format:
+For each test case print "Yes" if S is present in T or "No" otherwise.
+Sample Input 1:
+2
+ye
+wnpnzijdi
+ao
+jaoalc
+Sample Output 1:
+No
+Yes
+
+soln:
+
+
+
+#include<bits/stdc++.h>
+using namespace std;
+
+int* getlps(string pattern)
+{
+    int len = pattern.length();
+    int *lps = new int[len];
+
+    lps[0]=0;
+
+    int i=0,j=1;
+    while(j<len)
+    {
+        if(pattern[j]==pattern[i])
+        {
+            lps[j]=i+1;
+            i++;
+            j++;
+        }
+        else{
+            if(i!=0)
+            {
+                i=lps[i-1];
+            }
+            else{
+                lps[j]=0;
+                j++;
+            }
+        }
+    }
+    return lps;
+}
+
+bool KmpSearch(string text,string pattern)
+{
+    int lenText =text.length();
+    int lenPat=pattern.length();
+
+    int i=0;int j=0;
+
+   int *lps=getlps(pattern);
+
+   while(i<lenText && j<lenPat)
+   {
+       if(text[i]==pattern[j])
+       {
+           i++;
+           j++;
+           //to print all index where pattern present in text start
+        //    if(j==lenPat)
+        //    {
+        //        cout<<i-j<<endl;
+        //        i=i-j+1;
+        //        j=lps[j-1];
+        //    }
+       }
+       else{
+           if(j!=0)
+           {
+               j = lps[j-1];
+           }
+           else{
+               i++;
+           }
+       }
+   }
+   if(j==lenPat)return true;
+   return false;
+}
+int main(){
+    
+    // write your code here
+    int T;
+    cin>>T;
+    while(T>0)
+    {
+        string s;
+        cin>>s;
+        string t;
+        cin>>t;
+
+        if(KmpSearch(t,s))cout<<"Yes\n";
+        else cout<<"No\n";
+        T--;
+    }
+    return 0;
+}
